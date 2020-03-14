@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.ApiController.Authorization;
+
 
 //FrontEndApp proxies all incoming requests into the calls to BackEndApp using this controller:
 namespace DatingApp.API.Controllers
