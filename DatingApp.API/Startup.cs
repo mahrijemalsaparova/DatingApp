@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 namespace DatingApp.API
 {
     public class Startup
@@ -19,11 +21,24 @@ namespace DatingApp.API
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDbContext<DataContext>(x => x.UseSqlite
+        {//Program içinde DataContext istenirse gelip burdan sağla(izin veriyor) demek.
+            services.AddDbContext<DataContext>(x => x.UseSqlite //delegasyon
             (Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
             services.AddCors();
+            services.AddScoped<IAuthRepository, AuthRepository>(); //injection of IAuthRepository, AuthRepository
+            services.AddAuthentication(JwtBearerDefaults.AddAuthenticationScheme.
+            AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.
+                    GetBytes(Configuration.Getsection("AppSettings:Token").Value)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,   
+                };
+            }));
+
         }
     
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +53,8 @@ namespace DatingApp.API
                                            //bize lazım değil o yüzden devre dışı bıraktık. (HTTPS'i dinlemiyoruz)
 
             app.UseRouting();
+            app.AddAuthentication();
+            app.AddAuthorization();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthorization();
 
