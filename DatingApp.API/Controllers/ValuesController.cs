@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 //FrontEndApp proxies all incoming requests into the calls to BackEndApp using this controller:
 namespace DatingApp.API.Controllers
 {
-    [Authorize]
+    [Authorize] // Class Attribute
 //http:localhost:5000/api/values
     [Route("api/[controller]")]
     [ApiController]    //Aoutomatically validates our request

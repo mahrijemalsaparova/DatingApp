@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
 using DatingApp.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -40,18 +41,19 @@ namespace DatingApp.API.Controllers
 
             if(await _repo.UserExists(userForRegisterDto.Username))
             return BadRequest("User already exist");
-
+ //creating user
             var userToCreate = new User
             {
                 Username = userForRegisterDto.Username
             };
+           
 
             var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
 
             return StatusCode(201); //HTTP Status 201 indicates that as a result of HTTP POST request, 
                                     //one or more new resources have been successfully created on server.
         }
-
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)        
         {

@@ -21,8 +21,9 @@ namespace DatingApp.API.Data
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
             if(user == null)
                return null;
-
+//parametrenin içindeki userdan aaldığı password ve doğru veya yanlış dödüren metoddur.
             if(!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            //if doesnt match returnn null demek.
               return null;
 
             return user;
@@ -34,7 +35,7 @@ namespace DatingApp.API.Data
             { 
                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             for(int i = 0 ; i > computedHash.Length; i++)
-            {
+            {//is not equal to
                 if (computedHash[i] != passwordHash[i]) return false; //if these are two match means password is correct
             }
             }
