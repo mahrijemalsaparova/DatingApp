@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Data
 {
-    //QUERING OUR DATABASE BY ENTITYFRAMEWORK
+    //AuthRepository QUERING OUR DATABASE BY ENTITYFRAMEWORK
     public class AuthRepository : IAuthRepository
     {
         ////////INJECTION OF  OUR DATABASE////////////
         private readonly DataContext _context;
-        public AuthRepository(DataContext context)
+        public AuthRepository(DataContext context) //ctor 
         { 
             _context = context;
 
