@@ -26,7 +26,7 @@ namespace DatingApp.API.Controllers
 
         }
 
-        [AllowAnonymous]
+       [AllowAnonymous]
         [HttpGet]
          //Burada api/value ya  request geldiğinde Getvalue klasına girer ve dataya ulaşıp;
          // oradaki Values datasetinden verileri alıp liste halinde values değişkenine atar. 
