@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpInterceptor, HTTP_INTERCEPTORS} from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
@@ -15,9 +16,9 @@ export class ErrorInterceptor implements HttpInterceptor {
             if (error.status === 401) {
                 return throwError(error.statusText);
             }
-            if (error instanceof HttpErrorResponse) { 
+            if (error instanceof HttpErrorResponse) {
                 const applicationError = error.headers.get('Application-Error');
-                if (applicationError){
+                if (applicationError)  {
                     return throwError(applicationError);
                 }
                 const serverError = error.error;
@@ -41,3 +42,5 @@ export const ErrorInterceptorProvider = {
     useClass: ErrorInterceptor,
     multi: true,
 };
+
+
