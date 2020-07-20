@@ -8,12 +8,14 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class AuthService {
+  // http://localhost:5000/api/auth/
   baseUrl = environment.apiUrl + 'auth/';
+  // This library provides an HttpInterceptor which automatically attaches a JSON Web Token to HttpClient requests.
   jwtHelper = new JwtHelperService();
   decodedToken: any;
 
 constructor(private http: HttpClient) {}
-// /////// need some detail //////////// login method ////
+
 login(model: any)  {
   return this.http.post(this.baseUrl + 'login', model).pipe(
      map((response: any) => {
@@ -28,6 +30,7 @@ login(model: any)  {
  }
 
 register(model: any) {
+                      // http://localhost:5000/api/register
 return this.http.post(this.baseUrl + 'register', model);
 }
 
