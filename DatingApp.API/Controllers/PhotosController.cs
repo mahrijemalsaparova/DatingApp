@@ -52,7 +52,7 @@ namespace DatingApp.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPhotoForUser(int userId, PhotoForCreationDto photoForCreationDto)
+        public async Task<IActionResult> AddPhotoForUser(int userId, [FromForm]PhotoForCreationDto photoForCreationDto)
         {          // fotograf eklemeye çalışan kullanıcın tokenını kontrol edecez
                    //check to see if the userId from the token matches the use riding in the roots 
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
@@ -97,6 +97,85 @@ namespace DatingApp.API.Controllers
             };
 
             return BadRequest("Could not add the photo");
+        }
+
+        [HttpPost("{id}/setMain")]
+
+        public async Task<IActionResult> SetMainPhoto( int userId, int id)
+        {
+             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+            
+            // Değiştirmek istediği main fotonun id'si ile repodaki id örtüşüyormu onu check ediyoruz.
+            var user = await _repo.GetUser(userId); // user'ı repodan getir
+
+            //foto userın collectionunda varmı check ediyor
+            if(!user.Photos.Any(p => p.Id == id))
+                return Unauthorized();
+
+            // get photo from repo
+            var photoFromRepo = await _repo.GetPhoto(id);
+
+            //efekt etmeye çalıştığımız foto main mi
+            if(photoFromRepo.IsMain)
+                return BadRequest("This is already the main photo");
+
+            //son main olan fotoyu getir
+            var currentMainPhoto = await _repo.GetMainPhotoForUser(userId);
+            currentMainPhoto.IsMain = false;
+
+            photoFromRepo.IsMain = true;
+
+            if( await _repo.SaveAll())
+                return NoContent();
+
+            return BadRequest("Could not set photo main");            
+
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePhoto(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+            
+            // Değiştirmek istediği main fotonun id'si ile repodaki id örtüşüyormu onu check ediyoruz.
+            var user = await _repo.GetUser(userId); // user'ı repodan getir
+
+            //foto userın collectionunda varmı check ediyor
+            if(!user.Photos.Any(p => p.Id == id))
+                return Unauthorized();
+
+            // get photo from repo
+            var photoFromRepo = await _repo.GetPhoto(id);
+
+            //efekt etmeye çalıştığımız foto main mi
+            if(photoFromRepo.IsMain)
+                return BadRequest("You cannot delete your main photo");
+
+            if(photoFromRepo.PublicId != null)
+            {
+                     // destroy metodunun içine koyacagımız parametre yani params oluşturma
+           var deleteParams = new DeletionParams(photoFromRepo.PublicId); // photo id
+            // deleting photo from cloudinary
+            var result = _cloudinary.Destroy(deleteParams);
+
+            // response is ok?
+            if(result.Result == "ok"){
+                _repo.Delete(photoFromRepo);
+            }
+           }
+
+            if(photoFromRepo.PublicId == null)
+            {
+                 _repo.Delete(photoFromRepo);
+            }
+
+            if(await _repo.SaveAll())
+                return Ok();
+            
+            return BadRequest("Failed to delete the photo");
+
         }
     }
 }

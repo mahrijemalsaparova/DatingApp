@@ -12,9 +12,14 @@ import { AuthService } from '../_services/auth.service';
 export class NavComponent implements OnInit {
   model: any = {}; // And this is going to store our username and password which will lend be able to pass
 
+  // any to any için yani nav componentdeki user resmi için
+  photoUrl: string;
+
   constructor(public authService: AuthService, private alertify: AlertifyService, private router: Router) { }
 
   ngOnInit() {
+    // any to any için yani nav componentdeki user resmi için
+    this.authService.currentPhotoUrl.subscribe(photoUrl => this.photoUrl = photoUrl);
   }
 
   login() {
@@ -33,6 +38,12 @@ export class NavComponent implements OnInit {
 
   logout() {
     localStorage.removeItem('token');
+    // nav içindeki foooto için
+    localStorage.removeItem('user');
+     // nav içindeki foooto için
+    this.authService.decodedToken = null;
+       // nav içindeki foooto için
+    this.authService.currentUser = null;
     this.alertify.message('logged out');
     this.router.navigate(['/home']);
   }
