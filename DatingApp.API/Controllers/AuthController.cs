@@ -15,7 +15,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace DatingApp.API.Controllers
 {
-    [Route("api/[controller]")] //api/Auth
+
+    [Route("api/[controller]")] 
     [ApiController]
     public class AuthController : ControllerBase
     { //injection our new IAuthRepository
@@ -25,14 +26,12 @@ namespace DatingApp.API.Controllers
 
         public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
         {
-           _mapper = mapper;
+            _mapper = mapper;
             _repo = repo;
             _config = config;
         }
 
-
-        [HttpPost("register")] //Httppost method
-
+         [HttpPost("register")] 
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {//validate request / burada kullanıcıdan veri aldığımız için önce validation (onaylama) 
             //işlemi yapılmalıdır.
@@ -41,17 +40,19 @@ namespace DatingApp.API.Controllers
             if (await _repo.UserExists(userForRegisterDto.Username))
                 return BadRequest("User already exist");
             //creating user
-            var userToCreate = new User
-            {
-                Username = userForRegisterDto.Username
-            };
+            var userToCreate = _mapper.Map<User>(userForRegisterDto);
 
             var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
+            // so that we send back a location header with the requests
+            //3 param için 
+            var userToReturn = _mapper.Map<UserForDetailedDto>(createdUser);
+            //1 param: usercontroldeki GetUser rotunu çagır
+            return CreatedAtRoute("GetUser", new {controller = "Users", id = createdUser.Id }, userToReturn);
+        
 
-            return StatusCode(201); //HTTP Status 201 indicates that as a result of HTTP POST request, 
-                                    //one or more new resources have been successfully created on server.
-        }
-
+        } 
+         
+      
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
@@ -109,4 +110,5 @@ namespace DatingApp.API.Controllers
               */
         }
     }
+ 
 }

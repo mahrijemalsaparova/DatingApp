@@ -25,6 +25,9 @@ namespace DatingApp.API.Helpers
             CreateMap<UserForUpdateDto, User>();
             CreateMap<Photo, PhotoForReturnDto>();
             CreateMap<PhotoForCreationDto, Photo>();
+            // register kısmı için // userforregister kısımdaki propertiler directly User' a map olur
+            CreateMap<UserForRegisterDto, User>();
+            
         }
     }
 }
