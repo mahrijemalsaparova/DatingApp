@@ -33,23 +33,19 @@ namespace DatingApp.API.Controllers
 
          [HttpPost("register")] 
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
-        {//validate request / burada kullanıcıdan veri aldığımız için önce validation (onaylama) 
-            //işlemi yapılmalıdır.
-            userForRegisterDto.Username = userForRegisterDto.Username.ToLower(); // user'dan gelen ismini küçük yazdırmak için. Karışıklık olamamsı için.
-                                                                                 //Şimdi girilen (kullanıcının girdiği) ismini daha önce alınıp alınmadığını kontrol edicez.
+        {
+            userForRegisterDto.Username = userForRegisterDto.Username.ToLower(); 
+            
             if (await _repo.UserExists(userForRegisterDto.Username))
                 return BadRequest("User already exist");
-            //creating user
+           
             var userToCreate = _mapper.Map<User>(userForRegisterDto);
 
             var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
-            // so that we send back a location header with the requests
-            //3 param için 
+           
             var userToReturn = _mapper.Map<UserForDetailedDto>(createdUser);
-            //1 param: usercontroldeki GetUser rotunu çagır
+          
             return CreatedAtRoute("GetUser", new {controller = "Users", id = createdUser.Id }, userToReturn);
-        
-
         } 
          
       

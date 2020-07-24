@@ -11,6 +11,7 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
 import { FileUploadModule } from 'ng2-file-upload';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { TimeagoModule } from 'ngx-timeago';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -37,6 +38,7 @@ import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes.guard';
 
 
 
+
 export function tokenGetter() {
    return localStorage.getItem('token');
 }
@@ -54,7 +56,7 @@ export function tokenGetter() {
       MemberCardComponent,
       MemberDetailComponent,
       MemberEditComponent,
-      PhotoEditorComponent
+      PhotoEditorComponent,
    ],
    imports: [
       BrowserModule,
@@ -62,6 +64,7 @@ export function tokenGetter() {
       HttpClientModule,
       FormsModule,
       ReactiveFormsModule,
+      TimeagoModule.forRoot(),
       BrowserAnimationsModule,
       BsDropdownModule.forRoot(),
       BsDatepickerModule.forRoot(),
