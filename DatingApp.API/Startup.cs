@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
+
 namespace DatingApp.API
 {
     public class Startup
@@ -25,16 +26,39 @@ namespace DatingApp.API
 
         public IConfiguration Configuration { get; }
 
+        public void ConfigureDevelopmentServices(IServiceCollection services)
+        {
+            services.AddDbContext<DataContext>(x =>  {
+                x.UseLazyLoadingProxies();
+                x.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            ConfigureServices(services);
+        }
+
+           public void ConfigureProductionServices(IServiceCollection services)
+        {
+            services.AddEntityFrameworkNpgsql().AddDbContext<DataContext>(x => {
+                x.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
+                x.UseLazyLoadingProxies();
+            });
+            
+            ConfigureServices(services);
+        }
+       
+
         // This method gets called by the runtime. Use this method to add services to the container.
+
+
         public void ConfigureServices(IServiceCollection services)
         {//Program içinde DataContext istenirse gelip burdan sağla(izin veriyor) demek.
-            services.AddDbContext<DataContext>(x => x.UseSqlite //delegasyon
-            (Configuration.GetConnectionString("DefaultConnection")));
+            
             services.AddControllers().AddNewtonsoftJson(opt =>
             {
                 opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
             services.AddCors();
+           
             //the values for the properties inside the cloudinarysettings are going to match what's inside our appsettings.Jason File
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(DatingRepository).Assembly);
@@ -89,11 +113,14 @@ namespace DatingApp.API
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-            app.UseAuthorization();
+           
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }
