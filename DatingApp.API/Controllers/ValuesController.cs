@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 //FrontEndApp proxies all incoming requests into the calls to BackEndApp using this controller:
 namespace DatingApp.API.Controllers
 {
-    [Authorize] // Class Attribute
+    // Class Attribute
 //http:localhost:5000/api/values
     [Route("api/[controller]")]
     [ApiController]    //Aoutomatically validates our request
@@ -26,7 +26,7 @@ namespace DatingApp.API.Controllers
 
         }
 
-       [AllowAnonymous]
+       [Authorize(Roles = "Admin, Moderator")]
         [HttpGet]
          //Burada api/value ya  request geldiğinde Getvalue klasına girer ve dataya ulaşıp;
          // oradaki Values datasetinden verileri alıp liste halinde values değişkenine atar. 
@@ -39,7 +39,7 @@ namespace DatingApp.API.Controllers
         }
 
         //Get api/value/5
-        [AllowAnonymous]
+        [Authorize(Roles = "Member")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetValue(int id)
         {

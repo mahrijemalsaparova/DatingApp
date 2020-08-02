@@ -33,7 +33,8 @@ export class NavComponent implements OnInit {
   }
 
   loggedIn() {
-    return this.authService.loggedIn();
+    const token = localStorage.getItem('token');
+    return !!token;
   }
 
   logout() {

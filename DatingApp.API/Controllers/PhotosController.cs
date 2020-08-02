@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace DatingApp.API.Controllers
 {
-    [Authorize]
+
     [Route("api/users/{userId}/photos")]
     [ApiController]
     public class PhotosController : ControllerBase
@@ -58,7 +58,7 @@ namespace DatingApp.API.Controllers
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
-            var userFromRepo = await _repo.GetUser(userId);
+            var userFromRepo = await _repo.GetUser(userId, true);
 
             var file = photoForCreationDto.File;
             // result get back from cloudinary
@@ -107,7 +107,7 @@ namespace DatingApp.API.Controllers
                 return Unauthorized();
             
             // Değiştirmek istediği main fotonun id'si ile repodaki id örtüşüyormu onu check ediyoruz.
-            var user = await _repo.GetUser(userId); // user'ı repodan getir
+            var user = await _repo.GetUser(userId, true); // user'ı repodan getir
 
             //foto userın collectionunda varmı check ediyor
             if(!user.Photos.Any(p => p.Id == id))
@@ -140,7 +140,7 @@ namespace DatingApp.API.Controllers
                 return Unauthorized();
             
             // Değiştirmek istediği main fotonun id'si ile repodaki id örtüşüyormu onu check ediyoruz.
-            var user = await _repo.GetUser(userId); // user'ı repodan getir
+            var user = await _repo.GetUser(userId, true); // user'ı repodan getir
 
             //foto userın collectionunda varmı check ediyor
             if(!user.Photos.Any(p => p.Id == id))
